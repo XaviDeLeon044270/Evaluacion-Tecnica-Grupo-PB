@@ -1,0 +1,49 @@
+service: encuesta-backend
+frameworkVersion: '4'
+
+build:
+  esbuild: false
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    DATABASE_URL: "mysql://admin:j3V9%3D7%23Hs@encuestas-db.chqsiia463y5.us-east-2.rds.amazonaws.com:3306/encuestas_db?sslaccept=accept_invalid_certs"
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - 'node_modules/.prisma/**'
+    - 'node_modules/@prisma/client/**'
+    - 'prisma/schema.prisma'       
+
+functions:
+  api:
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    exclude: ['aws-sdk']
+    target: 'node18'
+    platform: 'node'
+    concurrency: 10
+    external:
+      - '@prisma/client'
+      - '.prisma'

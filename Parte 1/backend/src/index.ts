@@ -10,7 +10,12 @@ app.use(express.json());
 app.use('/api/catalogos', catalogosRoutes);
 app.use('/api/encuesta', encuestaRoutes); 
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+if (!process.env.LAMBDA_TASK_ROOT) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  });
+}
+
+export default app;
