@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model empresas {
+  id      Int     @id @default(autoincrement())
+  nombre  String  @db.VarChar(100)
+  id_pais Int
+  paises  paises  @relation(fields: [id_pais], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "empresas_ibfk_1")
+  sedes   sedes[]
+
+  @@index([id_pais], map: "id_pais")
+}
+
+model opciones {
+  id                 Int                  @id @default(autoincrement())
+  id_pregunta        Int
+  texto_opcion       String               @db.VarChar(100)
+  preguntas          preguntas            @relation(fields: [id_pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "opciones_ibfk_1")
+  respuestas_usuario respuestas_usuario[]
+
+  @@index([id_pregunta], map: "id_pregunta")
+}
+
+model paises {
+  id       Int        @id @default(autoincrement())
+  nombre   String     @db.VarChar(100)
+  empresas empresas[]
+}
+
+model preguntas {
+  id                 Int                  @id @default(autoincrement())
+  texto_pregunta     String               @db.VarChar(255)
+  opciones           opciones[]
+  respuestas_usuario respuestas_usuario[]
+}
+
+model respuestas_usuario {
+  id              Int       @id @default(autoincrement())
+  id_sede         Int
+  id_pregunta     Int
+  id_opcion       Int
+  fecha_respuesta DateTime? @default(now()) @db.DateTime(0)
+  sedes           sedes     @relation(fields: [id_sede], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "respuestas_usuario_ibfk_1")
+  preguntas       preguntas @relation(fields: [id_pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "respuestas_usuario_ibfk_2")
+  opciones        opciones  @relation(fields: [id_opcion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "respuestas_usuario_ibfk_3")
+
+  @@index([id_opcion], map: "id_opcion")
+  @@index([id_pregunta], map: "id_pregunta")
+  @@index([id_sede], map: "id_sede")
+}
+
+model sedes {
+  id                 Int                  @id @default(autoincrement())
+  nombre             String               @db.VarChar(100)
+  id_empresa         Int
+  respuestas_usuario respuestas_usuario[]
+  empresas           empresas             @relation(fields: [id_empresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sedes_ibfk_1")
+
+  @@index([id_empresa], map: "id_empresa")
+}
