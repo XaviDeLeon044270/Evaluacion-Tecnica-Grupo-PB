@@ -2,7 +2,7 @@
 
 ```mermaid
 graph LR
-    User((Usuario)) -- HTTPS --> S3["Frontend (AWS S3)"]
+    User((Usuario)) -- HTTP/HTTPS --> S3["Frontend (AWS S3)"]
     S3 -- JSON Requests --> APIG["API Gateway"]
     APIG -- Invoca --> Lambda["Backend (AWS Lambda)"]
     Lambda -- TCP/3306 --> RDS[("Base de Datos MySQL")]
